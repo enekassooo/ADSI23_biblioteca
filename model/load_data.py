@@ -36,6 +36,15 @@ cur.execute("""
 		password varchar(32)
 	)
 """)
+cur.execute("""
+    CREATE TABLE User_Book(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        book_id INTEGER,
+        FOREIGN KEY(user_id) REFERENCES User(id),
+        FOREIGN KEY(book_id) REFERENCES Book(id)
+    )
+""")
 
 cur.execute("""
 	CREATE TABLE Session(
@@ -45,6 +54,7 @@ cur.execute("""
 		FOREIGN KEY(user_id) REFERENCES User(id)
 	)
 """)
+cur.execute("DROP TABLE IF EXISTS User_Book")
 
 ### Insert users
 

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container p-5 my-5 border">
+
+   <h1> Recomendaciones de {{request.user.username}}</h1>
+    <h4>Según tus artistas leídos te recomendamos:</h2>
+    <hr class="hr" />
+
+    <div class="row">
+        {% for book in rbooks %}
+            <div class="col-lg-4 col-md-6 col-sm-12 my-2">
+                <div class="card d-flex flex-row" style="width: 18rem;">
+                    {% if book[3]: %}
+                        <img src="{{ book[3] }}" class="rounded" style="max-width: 6rem; height: fit-content;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book[1] }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ book[5] }}</h6>
+                        {% if book[4]: %}
+                            <p class="card-text">{{ book[4] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+
+    <hr class="hr" />
+
+    </div>
+
+{% endblock %}
