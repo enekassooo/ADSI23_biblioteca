@@ -1,5 +1,8 @@
-from .LibraryController import LibraryController
+
 from flask import Flask, render_template, request, make_response, redirect, g
+
+from controller.LibraryController import LibraryController
+from model import Connection, Book, User
 
 app = Flask(__name__, static_url_path='', static_folder='../view/static', template_folder='../view/')
 
@@ -51,9 +54,33 @@ def recomendaciones():
 	print("Recomendaciones:", recomended_books)
 	return render_template('recomendaiones.html', rbooks=recomended_books)
 
-@app.route('/gestionlibros')
-def gestionlibros():
-	return render_template('gestionlibros.html')
+
+def admin():
+
+	user_id = request.user.identity()
+
+
+	query = "SELECT * FROM User u JOIN Admin a ON u.id = a.user_id WHERE u.id = ?"
+	result = db.select_one(query, (user_id,))
+
+
+	es_administrador = result is not None
+
+	return render_template('index.html', es_administrador=es_administrador)
+@app.route('/gestionLibros')
+def gestionLibros():
+	libro = library.añadir_libro()
+	print("Se ha añadido el usuario correctamente")
+	return render_template('gestionlibros.html', book=libro)
+
+
+@app.route('/gestionUsuarios')
+def gestionUsuarios():
+	usuario = library.añadir_usuario()
+	print("Se ha añadido el usuario correctamente")
+	return render_template('gestionUsuarios.html', user=usuario)
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

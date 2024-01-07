@@ -1,3 +1,5 @@
+from flask import request
+
 from model import Connection, Book, User
 from model.tools import hash_password
 
@@ -62,3 +64,19 @@ class LibraryController:
 				recomendaciones.append(libro_info)
 			
 		return recomendaciones
+
+	def añadir_usuario(self):
+		nombre = request.values.get("nombre", "")
+		email = request.values.get("email", "")
+		contrasena = request.values.get("contraseña", "")
+		db.insert("INSERT INTO User(name, email, password) VALUES (?, ?, ?)", (nombre, email, contrasena))
+		return User(nombre, email, contrasena)
+
+	def añadir_libro(self):
+		titulo = request.values.get("titulo", "")
+		autor = request.values.get("autor", "")
+		portada = request.values.get("portada", "")
+		desc = request.values.get("desc", "")
+		db.insert("INSERT INTO Book(title, author, cover, description) VALUES (?, ?, ?, ?)", (titulo, autor, portada, desc))
+		return Book(titulo, autor, portada, desc)
+
