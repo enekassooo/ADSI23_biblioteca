@@ -17,6 +17,7 @@ class User:
 		self.id = id
 		self.username = username
 		self.email = email
+		self.admin = False
 
 	def __str__(self):
 		return f"{self.username} ({self.email})"

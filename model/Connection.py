@@ -14,7 +14,7 @@ class Connection:
 			self.cur = self.con.cursor()
 			self.__initialized = True
 
-	def select(self, sentence, parameters=None):
+	def select(self, sentence: object, parameters: object = None) -> object:
 		if parameters:
 			self.cur.execute(sentence, parameters)
 		else:

@@ -42,6 +42,17 @@ def catalogue():
 	return render_template('catalogue.html', books=books, title=title, author=author, current_page=page,
 	                       total_pages=total_pages, max=max, min=min)
 
+@app.route('/gestionUsuarios')
+def gestionUsuarios():
+	email = request.values.get("email", "")
+	password = request.values.get("password", "")
+	page = int(request.values.get("page", 1))
+	usuarios=library.get_user(email=email, password=password, page=page - 1)
+
+
+	return render_template('gestionUsuarios.html', usuarios=usuarios, email=email, current_page=page,
+	                       total_pages=total_pages, max=max, min=min)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
