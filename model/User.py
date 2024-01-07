@@ -22,6 +22,9 @@ class User:
 	def __str__(self):
 		return f"{self.username} ({self.email})"
 
+	def identity(self):
+		return self.id
+
 	def new_session(self):
 		now = float(datetime.datetime.now().time().strftime("%Y%m%d%H%M%S.%f"))
 		session_hash = hash_password(str(self.id)+str(now))

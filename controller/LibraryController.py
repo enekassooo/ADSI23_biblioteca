@@ -48,3 +48,17 @@ class LibraryController:
 			return User(user[0][0], user[0][1], user[0][2])
 		else:
 			return None
+	def get_recomendaciones(self, user):
+		librosleidos = db.select("SELECT book_id FROM User_Book WHERE user_id = ?", (user,))
+		recomendaciones = []
+		autores_leidos = db.select("SELECT DISTINCT author FROM Book WHERE id IN (SELECT book_id FROM User_Book WHERE user_id = ?)", (user,))
+		for autor in autores_leidos:
+			libros_recomendados = db.select("SELECT * FROM Book WHERE author = ?", (autor[0],))
+			for libro in libros_recomendados:
+				autor_info = db.select("SELECT * FROM Author WHERE id = ?", (libro[2],))
+				libro_info_list = list(libro)
+				libro_info_list.append(autor_info[0][1])  # Agregar nombre del autor
+				libro_info = tuple(libro_info_list)
+				recomendaciones.append(libro_info)
+			
+		return recomendaciones

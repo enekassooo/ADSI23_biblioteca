@@ -1,5 +1,5 @@
 from .LibraryController import LibraryController
-from flask import Flask, render_template, request, make_response, redirect
+from flask import Flask, render_template, request, make_response, redirect, g
 
 app = Flask(__name__, static_url_path='', static_folder='../view/static', template_folder='../view/')
 
@@ -16,6 +16,7 @@ def get_logged_user():
 			request.user = library.get_user_cookies(token, float(time))
 			if request.user:
 				request.user.token = token
+				g.user = request.user
 
 
 @app.after_request
@@ -42,17 +43,20 @@ def catalogue():
 	return render_template('catalogue.html', books=books, title=title, author=author, current_page=page,
 	                       total_pages=total_pages, max=max, min=min)
 
-@app.route('/gestionUsuarios')
-def gestionUsuarios():
-	email = request.values.get("email", "")
-	password = request.values.get("password", "")
-	page = int(request.values.get("page", 1))
-	usuarios=library.get_user(email=email, password=password, page=page - 1)
+@app.route('/recomendaciones')
+def recomendaciones():
+	user = request.user.identity()
+	print("El usuario es:", user)
+	recomended_books = library.get_recomendaciones(user)
+	print("Recomendaciones:", recomended_books)
+	return render_template('recomendaiones.html', rbooks=recomended_books)
 
 
-	return render_template('gestionUsuarios.html', usuarios=usuarios, email=email, current_page=page,
-	                       total_pages=total_pages, max=max, min=min)
-
+"""user = request.user.identity()
+	print("El usuario es:", user)
+	recomended_books = library.get_recomendaciones(user)
+	print("Recomendaciones:", recomended_books)
+	return render_template('recomendaiones.html', rbooks=recomended_books)"""
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -83,4 +87,5 @@ def logout():
 	if 'user' in dir(request) and request.user and request.user.token:
 		request.user.delete_session(request.user.token)
 		request.user = None
+		resp = render_template('index.html')
 	return resp
