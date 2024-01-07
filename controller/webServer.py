@@ -51,12 +51,9 @@ def recomendaciones():
 	print("Recomendaciones:", recomended_books)
 	return render_template('recomendaiones.html', rbooks=recomended_books)
 
-
-"""user = request.user.identity()
-	print("El usuario es:", user)
-	recomended_books = library.get_recomendaciones(user)
-	print("Recomendaciones:", recomended_books)
-	return render_template('recomendaiones.html', rbooks=recomended_books)"""
+@app.route('/gestionlibros')
+def gestionlibros():
+	return render_template('gestionlibros.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
