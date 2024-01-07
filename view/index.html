@@ -4,4 +4,18 @@
 <div class="container p-5 my-5 border">
     <h1>The best library</h1>
 </div>
+<div class="container p-5 my-5 border">
+    <ul class="nav nav-pills">
+        {% if 'user' in request.__dict__ and request.user and request.user.token: %}
+          <li class="nav-item"><a href= "/recomendaciones"> Recomendaciones {{request.user.username}}</a></li>
+          {% else %}
+          <li class="nav-item"><a href="/login" class="nav-link {% if request.path == '/login' %}active{% endif %}">Recomendaciones</a></li>
+          {% endif %}
+        
+        
+
+
+
+      </ul>
+</div>
 {% endblock %}
