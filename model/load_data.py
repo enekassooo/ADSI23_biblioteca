@@ -45,7 +45,13 @@ cur.execute("""
         FOREIGN KEY(book_id) REFERENCES Book(id)
     )
 """)
-
+cur.execute("""
+	CREATE TABLE Admin(
+        admin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        FOREIGN KEY(user_id) REFERENCES User(id)
+    )
+""")
 cur.execute("""
 	CREATE TABLE Session(
 		session_hash varchar(32) primary key,
@@ -54,7 +60,7 @@ cur.execute("""
 		FOREIGN KEY(user_id) REFERENCES User(id)
 	)
 """)
-cur.execute("DROP TABLE IF EXISTS User_Book")
+
 
 ### Insert users
 

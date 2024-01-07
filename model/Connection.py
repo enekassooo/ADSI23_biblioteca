@@ -18,7 +18,7 @@ class Connection:
             self.create_tables_if_not_exist()
         
     def create_tables_if_not_exist(self):
-        tables = ["Author", "Book", "User", "User_Book", "Session"]
+        tables = ["Author", "Book", "User", "User_Book", "Session", "Admin", "Ejemplo"]
         for table in tables:
             if not self.table_exists(table):
                 self.create_table(table)
@@ -43,10 +43,20 @@ class Connection:
                     FOREIGN KEY(book_id) REFERENCES Book(id)
                 )
             """)
+        elif table_name == "Admin":
+            self.cur.execute("""
+            CREATE TABLE Admin(
+                admin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                FOREIGN KEY(user_id) REFERENCES User(id)
+            )
+        """)
+
         for _ in range(40):
             user_id = random.randint(1, 4)  # Valores de usuario entre 1 y 4
             book_id = random.randint(1, 300)  # Valores de book_id entre 1 y 300
             self.cur.execute("INSERT INTO User_Book (user_id, book_id) VALUES (?, ?)", (user_id, book_id))
+        self.cur.execute("INSERT INTO Admin (user_id) VALUES (?)", (1,))
         self.con.commit() 
         
 

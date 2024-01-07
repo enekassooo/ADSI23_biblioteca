@@ -57,7 +57,7 @@ class LibraryController:
 			for libro in libros_recomendados:
 				autor_info = db.select("SELECT * FROM Author WHERE id = ?", (libro[2],))
 				libro_info_list = list(libro)
-				libro_info_list.append(autor_info[0][1])  # Agregar nombre del autor
+				libro_info_list.append(autor_info[0][1])
 				libro_info = tuple(libro_info_list)
 				recomendaciones.append(libro_info)
 			
