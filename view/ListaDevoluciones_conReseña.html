@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Lista de Devoluciones</title>
+</head>
+<body>
+
+<ul>
+    <li>
+        <strong>Título:</strong> Libro 1<br>
+        <strong>Autor:</strong> Autor 1<br>
+        <strong>Fecha de Devolución:</strong> 2024-01-08<br>
+        <button onclick="mostrarFormularioResena('Libro 1')">Reseña</button>
+    </li>
+    <li>
+        <strong>Título:</strong> Libro 2<br>
+        <strong>Autor:</strong> Autor 2<br>
+        <strong>Fecha de Devolución:</strong> 2024-01-09<br>
+        <button onclick="mostrarFormularioResena('Libro 2')">Reseña</button>
+    </li>
+    <!-- Agrega más libros según sea necesario -->
+</ul>
+
+<script>
+    function mostrarFormularioResena(libro) {
+        var reseña = prompt('Escribe tu reseña para ' + libro + ':');
+        if (reseña !== null) {
+            // Aquí puedes hacer algo con la reseña, como enviarla a un servidor o almacenarla localmente
+            alert('Reseña enviada:\n\n' + reseña);
+        }
+    }
+</script>
+
+</body>
+</html>
