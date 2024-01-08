@@ -1,37 +1,53 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from User import User
-from tools import hash_password 
+from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
 
 app = Flask(__name__)
 
-def get_usuario_autenticado():
-    user_id = session.get('user_id')
-    if user_id:
-        return User.get_by_id(user_id)
-    return None
+# Configuración de la base de datos
+DATABASE = 'datos.db'
 
-@app.route('/perfil')
-def perfil():
-    usuario_actual = get_usuario_autenticado()
+def init_db():
+    conn = sqlite3.connect(DATABASE)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS usuarios
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, historial_reservas TEXT, reseñas TEXT, amigos TEXT, referidos TEXT)''')
+    conn.commit()
+    conn.close()
 
-    if not usuario_actual:
-        return redirect(url_for('inicio'))
-    usuario = User(usuario_actual.id, "NombreUsuario", "email@ejemplo.com")
+init_db()
 
+# Rutas
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/perfil/<int:usuario_id>')
+def perfil(usuario_id):
+    conn = sqlite3.connect(DATABASE)
+    c = conn.cursor()
+    c.execute('SELECT * FROM usuarios WHERE id = ?', (usuario_id,))
+    usuario = c.fetchone()
+    conn.close()
     return render_template('perfil.html', usuario=usuario)
 
-@app.route('/referidos', methods=['GET', 'POST'])
-def referidos():
-    usuario_actual = get_usuario_autenticado()
-
-    if not usuario_actual:
-        return redirect(url_for('inicio'))
+@app.route('/recomendaciones_amigos/<int:usuario_id>', methods=['GET', 'POST'])
+def recomendaciones_amigos(usuario_id):
     if request.method == 'POST':
-        referente = request.form['codigo_referente']
-        usuario_actual.add_referido(referente)
+        # Procesar solicitud de amistad (aceptar o rechazar)
+        # Actualizar la base de datos y la lista de amistades del usuario
 
-    return render_template('referidos.html', usuario=usuario_actual)
+    # Obtener lista de recomendaciones de amigos
+    return render_template('recomendaciones_amigos.html', usuario_id=usuario_id)
 
+@app.route('/referidos/<int:usuario_id>', methods=['GET', 'POST'])
+def referidos(usuario_id):
+    if request.method == 'POST':
+        if 'agregar_referente' in request.form:
+            # Procesar la adición de un referente
+            # Actualizar la base de datos con el nuevo referido
+
+    # Obtener información de referidos
+    return render_template('referidos.html', usuario_id=usuario_id)
 
 if __name__ == '__main__':
     app.run(debug=True)
