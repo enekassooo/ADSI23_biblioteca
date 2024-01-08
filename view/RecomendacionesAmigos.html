@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recomendaciones de Amigos</title>
+</head>
+<body>
+    <h1>Recomendaciones de Amigos</h1>
+    <ul>
+        <!-- Aquí deberías mostrar la lista de recomendaciones de amigos -->
+        <li>Nombre del Amigo 1 <form action="/recomendaciones_amigos/{{ usuario_id }}" method="post"><button name="aceptar_amigo_1">Aceptar</button><button name="rechazar_amigo_1">Rechazar</button></form></li>
+        <li>Nombre del Amigo 2 <form action="/recomendaciones_amigos/{{ usuario_id }}" method="post"><button name="aceptar_amigo_2">Aceptar</button><button name="rechazar_amigo_2">Rechazar</button></form></li>
+        <!-- Repite el patrón para cada recomendación -->
+    </ul>
+</body>
+</html>
