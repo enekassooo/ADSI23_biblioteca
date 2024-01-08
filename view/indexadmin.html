@@ -7,15 +7,14 @@
 </div>
 <div class="container p-5 my-5 border">
     <ul class="nav nav-pills">
-        {% if 'user' in request.__dict__ and request.user and request.user.token: %}
+        {% if 'user' in request._dict_ and request.user and request.user.token: %}
           <li class="nav-item"><a href= "/recomendaciones" class="nav-link {% if request.path == '/login' %}active{% endif %}"> Recomendaciones {{request.user.username}}</a></li>
           {% else %}
           <li class="nav-item"><a href="/login" class="nav-link {% if request.path == '/login' %}active{% endif %}">Recomendaciones</a></li>
           {% endif %}
-        {% if es_administrador %}
-         <ul class="nav-item"><a href= "/gestionLibros" class="nav-link {% if request.path == '/login' %}active{% endif %}"> Gestionar libros </a></ul>
-            <ul class="nav-item"><a href= "/gestionUsuarios" class="nav-link {% if request.path == '/login' %}active{% endif %}"> Gestionar usuarios </a></ul>
-        {% endif %}
+          <ul class="nav-item"><a href= "/gestionLibros" class="nav-link {% if request.path == '/login' %}active{% endif %}"> Gestionar libros </a></ul>
+          <ul class="nav-item"><a href= "/gestionusuarios" class="nav-link {% if request.path == '/login' %}active{% endif %}"> Gestionar usuarios </a></ul>
+
 
 
 
