@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referidos</title>
+</head>
+<body>
+    <h1>Referidos</h1>
+    <p>Código de Referidos: {{ usuario.codigo }}</p>
+    <p>Amigos Referidos: {{ usuario.amigos_referidos }}</p>
+
+    <form method="post" action="{{ url_for('referidos') }}">
+        <label for="codigo_referente">Código de Referente:</label>
+        <input type="text" id="codigo_referente" name="codigo_referente" required>
+        <button type="submit">Guardar</button>
+        <a href="{{ url_for('referidos') }}">Cancelar</a>
+    </form>
+</body>
+</html>
