@@ -76,12 +76,6 @@ class Connection:
                 )
             """)
 
-        for _ in range(40):
-            user_id = random.randint(1, 4)  # Valores de usuario entre 1 y 4
-            book_id = random.randint(1, 300)  # Valores de book_id entre 1 y 300
-            self.cur.execute("INSERT INTO User_Book (user_id, book_id) VALUES (?, ?)", (user_id, book_id))
-        self.cur.execute("INSERT INTO Admin (user_id) VALUES (?)", (1,))
-        self.con.commit() 
         
 
     def select(self, sentence, parameters=None):

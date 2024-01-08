@@ -103,7 +103,6 @@ def gestionUsuarios():
 
     return render_template('gestorusuarios.html')
 
-<<<<<<< HEAD
 
 
 @app.route('/reserva', methods=['GET', 'POST'])
@@ -153,8 +152,6 @@ def devolver():
 @app.route('/gestionlibros')
 def gestionlibros():
 	return render_template('gestionlibros.html')
-=======
->>>>>>> 65f5c4ecf976c0366863d56a79b8c0cebbc3f2d4
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
