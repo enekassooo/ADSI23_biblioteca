@@ -60,6 +60,30 @@ cur.execute("""
 		FOREIGN KEY(user_id) REFERENCES User(id)
 	)
 """)
+cur.execute("""
+    CREATE TABLE Reserva (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fecha_inicio DATE,
+        fecha_fin DATE,
+        usuario_id INTEGER,
+        libro_id INTEGER,  
+        FOREIGN KEY(usuario_id) REFERENCES User(id),
+        FOREIGN KEY(libro_id) REFERENCES Book(id)  
+    )
+""")
+cur.execute("""
+    CREATE TABLE Devolucion (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fecha_inicio DATE,
+        fecha_fin DATE,
+        usuario_id INTEGER,
+        libro_id INTEGER,  
+        FOREIGN KEY(usuario_id) REFERENCES User(id),
+        FOREIGN KEY(libro_id) REFERENCES Book(id)  
+    )
+""")
+
+cur.execute("DROP TABLE IF EXISTS User_Book")
 
 
 ### Insert users

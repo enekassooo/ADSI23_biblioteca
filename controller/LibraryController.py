@@ -1,5 +1,9 @@
+from asyncio import current_task
+import curses
+from datetime import datetime, timedelta  
 from model import Connection, Book, User
 from model.tools import hash_password
+from flask import flash, redirect, url_for
 
 db = Connection()
 
@@ -10,6 +14,7 @@ class LibraryController:
 		if cls.__instance is None:
 			cls.__instance = super(LibraryController, cls).__new__(cls)
 			cls.__instance.__initialized = False
+
 		return cls.__instance
 
 
@@ -62,3 +67,122 @@ class LibraryController:
 				recomendaciones.append(libro_info)
 			
 		return recomendaciones
+
+
+
+
+	def get_book(self, titulo, autor, usuario_id):
+		# Obtener el ID del autor basado en el nombre
+		author_id = db.select("SELECT id FROM Author WHERE name = ?", (autor,))
+		self.realizar_devoluciones_60_d(db)
+		if author_id and len(author_id) > 0:
+			print(f"Author ID: {author_id}, Titulo: {titulo}")
+			author_id_scalar = author_id[0][0]
+			libr = db.select("SELECT id FROM Book WHERE author = ? AND title = ?", (author_id_scalar, titulo))
+
+			if libr and len(libr) > 0:
+				# Verificar si el libro tiene una reserva
+				existing_reservations = db.select("SELECT id FROM Reserva WHERE libro_id = ?", (libr[0][0],))
+
+				if not existing_reservations:
+					# Añadir una reserva si el libro no tiene una reserva existente
+					fecha_actual = datetime.now()
+					db.insert("INSERT INTO Reserva (fecha_inicio, fecha_fin, usuario_id, libro_id) VALUES (?, ?, ?, ?)",
+							(fecha_actual, None, usuario_id, libr[0][0]))
+					
+					print("Reserva hecha correctamente")
+					#fecha_prue = fecha_actual - timedelta(days=365)
+					#db.insert("INSERT INTO Reserva (fecha_inicio, fecha_fin, usuario_id, libro_id) VALUES (?, ?, ?, ?)",
+					#		(fecha_prue, None, usuario_id, libr[0][0]))
+				else:
+					print("El libro ya tiene una reserva.")
+			else:
+				print("Libro no encontrado.")
+		return 
+
+
+	def devolver_book(self, titulo, autor, usuario_id):
+		# Obtener el ID del autor basado en el nombre
+		author_id = db.select("SELECT id FROM Author WHERE name = ?", (autor,))
+		self.realizar_devoluciones_60_d(db)
+		if author_id and len(author_id) > 0:
+			print(f"Author ID: {author_id}, Titulo: {titulo}")
+			author_id_scalar = author_id[0][0]
+			libr = db.select("SELECT id FROM Book WHERE author = ? AND title = ?", (author_id_scalar, titulo))
+
+			if libr and len(libr) > 0:
+				# Verificar si el libro tiene una reserva
+				existing_reservations = db.select("SELECT * FROM Reserva WHERE libro_id = ?", (libr[0][0],))
+				#f_inic = db.select("SELECT fecha_inicio FROM Reserva WHERE libro_id = ?", (libr[0][0],))
+
+				if existing_reservations:
+					f_inic = existing_reservations[0][1]
+					# Añadir una devolucion
+					fecha_actual = datetime.now()
+					db.insert("INSERT INTO Devolucion (fecha_inicio, fecha_fin, usuario_id, libro_id) VALUES (?, ?, ?, ?)",
+							(f_inic, fecha_actual, usuario_id, libr[0][0]))
+					db.delete("DELETE FROM Reserva WHERE libro_id = ?", (libr[0][0],) )
+				else:
+					print("El libro no lo tienes reservado, no se puede devolver.")
+			else:
+				print("Libro no encontrado.")
+		return None
+
+
+	def realizar_devoluciones_60_d(self, db):
+		# Obtener todas las reservas existentes
+		reservas = db.select("SELECT * FROM Reserva")
+
+		for reserva in reservas:
+			reserva_id = reserva[0]
+			#fecha_i = db.select("SELECT	fecha_inicio FROM Reserva WHERE id = ?",(reserva_id,))
+			fecha_i = datetime.strptime(reserva[1], "%Y-%m-%d %H:%M:%S.%f")
+			fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			u_id = reserva[3]
+			libro_id = reserva[4]
+			#u_id = db.select("SELECT usuario_id FROM Reserva WHERE id = ?",(reserva_id,))
+			#libro_id = db.select("SELECT libro_id FROM Reserva WHERE id = ?",(reserva_id,))
+
+			# Calcular la cantidad de días transcurridos desde la fecha de inicio
+			dias_transcurridos = (datetime.now() - fecha_i).days
+	
+			# Verificar si han pasado más de 60 días
+			if dias_transcurridos > 60:
+				# Eliminar automáticamente la reserva
+				db.insert("INSERT INTO Devolucion (fecha_inicio, fecha_fin, usuario_id, libro_id) VALUES (?, ?, ?, ?)",
+							(fecha_i, fecha_actual, u_id, libro_id))
+				db.delete("DELETE FROM Reserva WHERE id = ?", (reserva_id,))
+				print(f"Reserva ID {reserva_id} para el libro ID {libro_id} eliminada automáticamente (más de 60 días).")
+
+
+
+		'''
+		#prueba
+		fecha_actual = datetime.now()
+		fecha_prue = fecha_actual - timedelta(days=365)
+		db.insert("INSERT INTO Reserva (fecha_inicio, fecha_fin, usuario_id, libro_id) VALUES (?, ?, ?, ?)",
+				(fecha_prue, None, usuario_id, 9))
+		db.insert("INSERT INTO Reserva (fecha_inicio, fecha_fin, usuario_id, libro_id) VALUES (?, ?, ?, ?)",
+				(fecha_prue, None, usuario_id, 8))
+		#fin_prueba
+		'''
+
+	def get_reservas(self, user_id):
+		reservas_info = db.select("""
+		SELECT Book.*, Reserva.fecha_inicio
+		FROM Reserva
+		JOIN Book ON Reserva.libro_id = Book.id
+		WHERE Reserva.usuario_id = ?
+		""", (user_id,))
+
+		return reservas_info
+	
+	def get_devoluciones(self, user_id):
+		devolucion_info = db.select("""
+		SELECT Book.*, Devolucion.fecha_fin
+		FROM Devolucion
+		JOIN Book ON Devolucion.libro_id = Book.id
+		WHERE Devolucion.usuario_id = ?
+		""", (user_id,))
+
+		return devolucion_info

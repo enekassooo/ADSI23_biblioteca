@@ -25,7 +25,17 @@
           {% else %}
           <li class="nav-item"><a href="/login" class="nav-link {% if request.path == '/login' %}active{% endif %}">Recomendaciones</a></li>
           {% endif %}
-        
+          {% if 'user' in request.__dict__ and request.user and request.user.token: %}
+          <li class="nav-item"><a href= "/reserva"class="nav-link {% if request.path == '/reserva' %}active{% endif %}"> Reservas</a></li>
+          {% else %}
+          <li class="nav-item"><a href="/login" class="nav-link {% if request.path == '/login' %}active{% endif %}">Reservas</a></li>
+          {% endif %}
+          {% if 'user' in request.__dict__ and request.user and request.user.token: %}
+          <li class="nav-item"><a href= "/devolver"class="nav-link {% if request.path == '/devolver' %}active{% endif %}"> Devoluciones</a></li>
+          {% else %}
+          <li class="nav-item"><a href="/login" class="nav-link {% if request.path == '/login' %}active{% endif %}">Devoluciones</a></li>
+          {% endif %}
+
           {% if 'user' in request.__dict__ and request.user and request.user.token: %}
           <li class="nav-item"><span class="nav-link disabled">{{request.user.username}}</span></li>
           <li class="nav-item"><a href="/logout?path={{request.path}}" class="nav-link"><i class="fa fa-sign-out fa-lg"></i></a></li>

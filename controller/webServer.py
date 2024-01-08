@@ -51,6 +51,52 @@ def recomendaciones():
 	print("Recomendaciones:", recomended_books)
 	return render_template('recomendaiones.html', rbooks=recomended_books)
 
+
+
+@app.route('/reserva', methods=['GET', 'POST'])
+def reservas():
+    # Obtener el id del usuario desde la sesión
+    user_id = request.user.identity()
+    reserv = library.get_reservas(user_id)
+    print("la lista es" ,reserv)
+
+    if request.method == 'POST':
+        # Si es una solicitud POST, obtener los datos del formulario
+        titulo_libro = request.form['titulo_libro']
+        autor_libro = request.form['autor_libro']
+
+        # Obtener información del libro y crear la reserva si existe
+        libro_info = library.get_book(titulo_libro, autor_libro, user_id)
+
+        return render_template('reserva.html', libro_info=libro_info)
+    
+    # Renderizar la plantilla reserva.html si el método no es POST
+    return render_template('reserva.html', lista_reserv=reserv)
+
+
+
+@app.route('/devolver', methods=['GET', 'POST'])
+def devolver():
+    # Obtener el id del usuario desde la sesión
+    user_id = request.user.identity()
+    devolucion = library.get_devoluciones(user_id)
+    print("la lista es" ,devolucion)
+    if request.method == 'POST':
+        # Si es una solicitud POST, obtener los datos del formulario
+        titulo_libro = request.form['titulo_libro']
+        autor_libro = request.form['autor_libro']
+
+        # Obtener información del libro y crear devolución
+        libro_info = library.devolver_book(titulo_libro, autor_libro, user_id)
+
+        return render_template('devolver.html', libro_info=libro_info)
+
+    # Renderizar la plantilla devoluciona.html si el método no es POST
+    return render_template('devolver.html', lista_devoluciones = devolucion)
+
+
+
+
 @app.route('/gestionlibros')
 def gestionlibros():
 	return render_template('gestionlibros.html')
