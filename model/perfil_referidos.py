@@ -1,52 +1,97 @@
-from flask import Flask, render_template, request, redirect, url_for
+# Importamos las librerías necesarias
+import os
 import sqlite3
+from flask import Flask, render_template, request
 
+# Creamos la aplicación Flask
 app = Flask(__name__)
-# Configuración de la base de datos
-DATABASE = 'datos.db'
 
-def init_db():
-    conn = sqlite3.connect(DATABASE)
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS usuarios
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, historial_reservas TEXT, reseñas TEXT, amigos TEXT, referidos TEXT)''')
-    conn.commit()
-    conn.close()
+# Conectamos con la base de datos
+db = sqlite3.connect("datos.db")
 
-init_db()
+# Definimos una función para obtener el usuario actual
+def get_current_user():
+    # Obtenemos el ID del usuario actual
+    user_id = request.cookies.get("user_id")
 
-# Rutas
-@app.route('/')
-def index():
-    return render_template('index.html')
+    # Si el ID del usuario es None, significa que el usuario no está autenticado
+    if user_id is None:
+        return None
 
-@app.route('/perfil/<int:usuario_id>')
-def perfil(usuario_id):
-    conn = sqlite3.connect(DATABASE)
-    c = conn.cursor()
-    c.execute('SELECT * FROM usuarios WHERE id = ?', (usuario_id,))
-    usuario = c.fetchone()
-    conn.close()
-    return render_template('perfil.html', usuario=usuario)
+    # Obtenemos los datos del usuario de la base de datos
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM usuarios WHERE id = ?", [user_id])
+    user = cursor.fetchone()
 
-@app.route('/recomendaciones_amigos/<int:usuario_id>', methods=['GET', 'POST'])
-def recomendaciones_amigos(usuario_id):
-    if request.method == 'POST':
-        # Procesar solicitud de amistad (aceptar o rechazar)
-        # Actualizar la base de datos y la lista de amistades del usuario
+    return user
 
-    # Obtener lista de recomendaciones de amigos
-    return render_template('recomendaciones_amigos.html', usuario_id=usuario_id)
+# Definimos una función para obtener las solicitudes de amistad pendientes del usuario actual
+def get_pending_friend_requests(user):
+    # Obtenemos la lista de solicitudes de amistad pendientes
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM solicitudes_amistad WHERE usuario_receptor = ?", [user.id])
+    solicitudes_amistad = cursor.fetchall()
 
-@app.route('/referidos/<int:usuario_id>', methods=['GET', 'POST'])
-def referidos(usuario_id):
-    if request.method == 'POST':
-        if 'agregar_referente' in request.form:
-            # Procesar la adición de un referente
-            # Actualizar la base de datos con el nuevo referido
+    return solicitudes_amistad
 
-    # Obtener información de referidos
-    return render_template('referidos.html', usuario_id=usuario_id)
+# Definimos una función para aceptar una solicitud de amistad
+def aceptar_solicitud_amistad(user, solicitud_amistad):
+    # Actualizamos el estado de la solicitud de amistad a "aceptada"
+    cursor = db.cursor()
+    cursor.execute("UPDATE solicitudes_amistad SET estado = 'aceptada' WHERE id = ?", [solicitud_amistad.id])
+    db.commit()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    # Añadimos el usuario que envió la solicitud de amistad a la lista de amigos del usuario actual
+    cursor.execute("INSERT INTO amigos (usuario_1, usuario_2) VALUES (?, ?)", [user.id, solicitud_amistad.usuario_emisor])
+    db.commit()
+
+# Definimos una función para rechazar una solicitud de amistad
+def rechazar_solicitud_amistad(solicitud_amistad):
+    # Eliminamos la solicitud de amistad de la base de datos
+    cursor = db.cursor()
+    cursor.execute("DELETE FROM solicitudes_amistad WHERE id = ?", [solicitud_amistad.id])
+    db.commit()
+
+# Definimos una función para obtener el código de referido del usuario actual
+def get_referido_code(user):
+    return user.referido_code
+
+# Definimos una función para añadir un referido
+def añadir_referido(user, referido_code):
+    # Actualizamos el código de referido del usuario actual
+    cursor = db.cursor()
+    cursor.execute("UPDATE usuarios SET referido_code = ? WHERE id = ?", [referido_code, user.id])
+    db.commit()
+
+# Definimos la ruta para el perfil del usuario
+@app.route("/perfil")
+def perfil():
+    # Obtenemos el usuario actual
+    user = get_current_user()
+
+    # Si el usuario es None, significa que el usuario no está autenticado
+    if user is None:
+        return render_template("login.html")
+
+    # Obtenemos las solicitudes de amistad pendientes del usuario
+    solicitudes_amistad = get_pending_friend_requests(user)
+
+    # Obtenemos el código de referido del usuario
+    referido_code = get_referido_code(user)
+
+    return render_template("perfil.html", user=user, solicitudes_amistad=solicitudes_amistad, referido_code=referido_code)
+
+# Definimos la ruta para gestionar las solicitudes de amistad
+@app.route("/perfil/solicitudes-amistad")
+def solicitudes_amistad():
+    # Obtenemos el usuario actual
+    user = get_current_user()
+
+    # Si el usuario es None, significa que el usuario no está autenticado
+    if user is None:
+        return render_template("login.html")
+
+    # Obtenemos las solicitudes de amistad pendientes del usuario
+    solicitudes_amistad = get_pending_friend_requests(user)
+
+    return render_template("solicitudes_
