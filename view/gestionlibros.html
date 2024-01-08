@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container p-5 my-5 border">
 
-  <!-- Formulario para añadir libros -->
+
   <form class="mb-4" method="POST">
     <h2 class="mb-3">Añadir Libros</h2>
 
@@ -20,7 +20,7 @@
 
     <div class="form-group">
       <label for="portada">Portada</label>
-      <input type="url" id="portada" name="portada" class="form-control" required>
+      <input type="url" id="portada" name="portada" class="form-control">
     </div>
 
     <div class="form-group">
@@ -34,11 +34,11 @@
   <div>
     <h2 class="mb-3">Eliminar Libros</h2>
 
-    <!-- Formulario para eliminar libros por título -->
+
     <form class="form-inline" method="POST">
       <div class="form-group mb-2">
-        <label for="eliminarID" class="sr-only">ID</label>
-        <input type="text" id="eliminarID" name="eliminarID" class="form-control" placeholder="ID del libro" required>
+        <label for="id" class="sr-only">ID</label>
+        <input type="text" id="id" name="id" class="form-control" placeholder="ID del libro" required>
       </div>
       <button type="submit" class="btn btn-danger mb-2 ml-2">Eliminar</button>
     </form>
