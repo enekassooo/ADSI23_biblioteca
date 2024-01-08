@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container p-5 my-5 border">
+        <h1 class="text-black">Pagina devoluciones</h1>
+        <form class="form-inline" method="post" action="{{ url_for('devolver') }}">
+            <div class="input-group mb-2 mr-sm-2">
+                <label for="titulo_libro" class="col-sm-2 col-form-label">Título del Libro</label>
+                <input type="text" class="form-control mb-2" id="titulo_libro" name="titulo_libro" required>
+            </div>
+            <div class="input-group mb-2 mr-sm-2">
+                <label for="autor_libro" class="col-sm-2 col-form-label">Autor del Libro</label>
+                <input type="text" class="form-control mb-2" id="autor_libro" name="autor_libro" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Devolver</button>
+        </form>
+        <br><br><br>
+        <h1>Historial devoluciones</h1>
+        <div class="row">
+
+            {% for book in lista_devoluciones %}
+            <div class="col-lg-4 col-md-6 col-sm-12 my-2">
+                <div class="card d-flex flex-row" style="width: 18rem;">
+                    {% if book[3]: %}
+                        <img src="{{ book[3] }}" class="rounded" style="max-width: 6rem; height: fit-content;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book[1] }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Fin:{{ book[5] }}</h6>
+                        {% if book[4]: %}
+                            <p class="card-text">{{ book[4] }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+    
+        </div>
+    </div>
+{% endblock %}
