@@ -1,21 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Referidos</title>
 </head>
 <body>
     <h1>Referidos</h1>
-    <p>Código de Referidos: {{ usuario.codigo }}</p>
-    <p>Amigos Referidos: {{ usuario.amigos_referidos }}</p>
-
-    <form method="post" action="{{ url_for('referidos') }}">
+    <p>Código de Referidos: {{ usuario.referidos_codigo }}</p>
+    <p>Enlace de Referidos: {{ url_for('referidos', usuario_id=usuario_id, _external=True) }}</p>
+    <h2>Amigos Referidos</h2>
+    <ul>
+        <!-- Aquí deberías mostrar la lista de amigos referidos -->
+        <li>Nombre del Amigo 1</li>
+        <li>Nombre del Amigo 2</li>
+        <!-- Repite el patrón para cada amigo referido -->
+    </ul>
+    <h2>Añadir Referente</h2>
+    <form action="/referidos/{{ usuario_id }}" method="post">
         <label for="codigo_referente">Código de Referente:</label>
         <input type="text" id="codigo_referente" name="codigo_referente" required>
-        <button type="submit">Guardar</button>
-        <a href="{{ url_for('referidos') }}">Cancelar</a>
+        <button type="submit" name="guardar_referente">Guardar</button>
+        <button type="button" onclick="window.location='/referidos/{{ usuario_id }}'">Cancelar</button>
     </form>
 </body>
 </html>
