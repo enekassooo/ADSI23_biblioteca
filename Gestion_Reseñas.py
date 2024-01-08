@@ -1,10 +1,8 @@
 import sqlite3
 
-# Conexión a la base de datos
 conn = sqlite3.connect('datos.db')
 cursor = conn.cursor()
 
-# Crear tabla de libros si no existe
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS libros (
         id INTEGER PRIMARY KEY,
@@ -15,7 +13,6 @@ cursor.execute('''
 ''')
 conn.commit()
 
-# Crear tabla de usuarios si no existe
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS usuarios (
         id INTEGER PRIMARY KEY,
@@ -25,7 +22,6 @@ cursor.execute('''
 ''')
 conn.commit()
 
-# Crear tabla de historial de préstamos si no existe
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS historial_prestamos (
         id INTEGER PRIMARY KEY,
@@ -37,7 +33,6 @@ cursor.execute('''
 ''')
 conn.commit()
 
-# Función para agregar o actualizar reseñas
 def agregar_resena(id_libro, id_usuario, reseña):
     cursor.execute('SELECT * FROM libros WHERE id = ?', (id_libro,))
     libro = cursor.fetchone()
@@ -51,10 +46,8 @@ def agregar_resena(id_libro, id_usuario, reseña):
             libro_actualizado = cursor.fetchone()
             
             if libro_actualizado[3]:
-                # Si ya tiene una reseña, actualizarla
                 cursor.execute('UPDATE libros SET reseña = ? WHERE id = ?', (reseña, id_libro))
             else:
-                # Si no tiene una reseña, agregar una nueva
                 cursor.execute('UPDATE libros SET reseña = ? WHERE id = ?', (reseña, id_libro))
 
             conn.commit()
