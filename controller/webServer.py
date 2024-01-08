@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, make_response, redirect, g
-
+from .TemaController import TemaController
 from controller.LibraryController import LibraryController
+
 from model import Connection, Book, User
 
 app = Flask(__name__, static_url_path='', static_folder='../view/static', template_folder='../view/')
 
 library = LibraryController()
-
+foro_controller = TemaController()
 
 @app.before_request
 def get_logged_user():
@@ -134,3 +135,26 @@ def logout():
         request.user = None
         resp = render_template('index.html')
     return resp
+
+@app.route("/foro")
+def foro():
+    title = request.values.get("title", "")
+    # creator = request.values.get("creator", "")
+    page = int(request.values.get("page", 1))
+    temas, nb_temas = foro_controller.search_temas(title=title, page=page - 1)
+    total_pages = (nb_temas // 6) + 1
+    return render_template(
+        "foro.html",
+        temas=temas,
+        title=title,
+        # creator=creator,
+        current_page=page,
+        total_pages=total_pages,
+        max=max,
+        min=min,
+    )
+
+@app.route("/foro/<int:tema_id>")
+def tema_detail(tema_id):
+    tema = foro_controller.get_tema_details(tema_id)
+    return render_template("detail.html", tema=tema)
